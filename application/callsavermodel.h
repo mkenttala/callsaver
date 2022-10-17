@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QStringList>
 #include <QMediaPlayer>
+#include <QHash>
 
 class CallSaverModel : public QAbstractListModel
 {
@@ -12,7 +13,11 @@ class CallSaverModel : public QAbstractListModel
 
 public:
     enum CallSaverModelRoles {
-        NumberRole = Qt::UserRole + 1
+        NumberRole = Qt::UserRole + 1,
+        LengthRole
+    };
+    struct CallSaverType {
+        int length;
     };
 
     explicit CallSaverModel(QObject *parent = nullptr);
@@ -25,6 +30,7 @@ signals:
 private:
     QStringList m_files;
     QMediaPlayer* m_player;
+    QHash<QString, CallSaverType> m_data;
 };
 
 #endif // CALLSAVERMODEL_H

@@ -6,13 +6,17 @@ ApplicationWindow {
     initialPage: Component {
         Page {
             SilicaListView {
-                width: 480; height: 800
+                anchors.fill: parent
                 model: callSaverModel
                 delegate: Item {
-                    width: ListView.view.width
+                    width: parent.width
                     height: Theme.itemSizeSmall
+                    Row {
+                        spacing: 10
 
-                    Label { text: number }
+                        Label { text: number }
+                        Label { text: length }
+                    }
                 }
 
                 Component.onCompleted: console.log("count:", callSaverModel.rowCount())
