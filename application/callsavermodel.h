@@ -14,10 +14,12 @@ class CallSaverModel : public QAbstractListModel
 public:
     enum CallSaverModelRoles {
         NumberRole = Qt::UserRole + 1,
-        LengthRole
+        LengthRole,
+        DateRole
     };
     struct CallSaverType {
         int length;
+        QString date;
     };
 
     explicit CallSaverModel(QObject *parent = nullptr);
@@ -25,12 +27,15 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     virtual QHash<int, QByteArray> roleNames() const;
 
+    Q_INVOKABLE void play(int index);
+
 signals:
 
 private:
     QStringList m_files;
     QMediaPlayer* m_player;
     QHash<QString, CallSaverType> m_data;
+    int m_playindex;
 };
 
 #endif // CALLSAVERMODEL_H
