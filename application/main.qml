@@ -6,12 +6,18 @@ ApplicationWindow {
     initialPage: Component {
         Page {
             SilicaListView {
+                id: listView
                 anchors.fill: parent
                 anchors.margins: {Theme.paddingLarge, Theme.paddingLarge, Theme.paddingLarge, Theme.paddingLarge}
                 model: callSaverModel
+                highlightFollowsCurrentItem: true
+                highlight: Rectangle { color: Theme.highlightBackgroundColor }
+                focus: true
+                currentIndex: -1
                 delegate: Item {
                     width: parent.width
                     height: Theme.itemSizeSmall
+
                     Column {
                         anchors.fill: parent
                         Row {
@@ -34,14 +40,20 @@ ApplicationWindow {
                     }
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: callSaverModel.play(index);
+                        onClicked: {
+                            listView.currentIndex = index;
+                            callSaverModel.play(index);
+                        }
+                    }
+                }
+                CallSaverModel {
+                    id: callSaverModel
+
+                    onPlayPositionChanged: {
+                        listView.highlightItem.width = listView.width * playPosition / 100;
                     }
                 }
             }
         }
-    }
-
-    CallSaverModel {
-        id: callSaverModel
     }
 }

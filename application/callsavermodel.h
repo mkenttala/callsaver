@@ -10,6 +10,7 @@ class CallSaverModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_ENUMS(CallSaverModelRoles)
+    Q_PROPERTY(int playPosition READ playPosition NOTIFY playPositionChanged)
 
 public:
     enum CallSaverModelRoles {
@@ -28,14 +29,17 @@ public:
     virtual QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE void play(int index);
+    Q_INVOKABLE int playPosition();
 
 signals:
+    void playPositionChanged();
 
 private:
     QStringList m_files;
     QMediaPlayer* m_player;
     QHash<QString, CallSaverType> m_data;
     int m_playindex;
+    int m_playPosition;
 };
 
 #endif // CALLSAVERMODEL_H

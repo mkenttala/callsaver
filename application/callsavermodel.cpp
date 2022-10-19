@@ -1,11 +1,12 @@
 #include "callsavermodel.h"
 #include "callsaverthread.h"
 #include <QMediaPlayer>
+#include <QDir>
 #include <QDebug>
 
-CallSaverModel::CallSaverModel(QObject *parent) : QAbstractListModel(parent), m_player(new QMediaPlayer(this)), m_playindex(-1)
+CallSaverModel::CallSaverModel(QObject *parent) : QAbstractListModel(parent), m_player(new QMediaPlayer(this)), m_playindex(-1), m_playPosition(0)
 {
-    CallSaverThread* thread = new CallSaverThread(this);
+    /*CallSaverThread* thread = new CallSaverThread(this);
     connect(thread, &CallSaverThread::file, [this](const QString& name) {
         m_files.append(name);
         beginInsertRows(index(m_files.count()), m_files.count(), m_files.count());
@@ -14,7 +15,7 @@ CallSaverModel::CallSaverModel(QObject *parent) : QAbstractListModel(parent), m_
     connect(thread, &CallSaverThread::finished, [this]() {
         if (!m_files.isEmpty())
             m_player->setMedia(QUrl::fromLocalFile(m_files.at(0)));
-    });
+    });*/
     connect(m_player, &QMediaPlayer::mediaStatusChanged, [this]() {
         QString file = m_player->media().canonicalUrl().toLocalFile();
         int i = m_files.indexOf(file);
@@ -60,9 +61,21 @@ CallSaverModel::CallSaverModel(QObject *parent) : QAbstractListModel(parent), m_
         qDebug() << Q_FUNC_INFO << m_player->state();
     });
     connect(m_player, &QMediaPlayer::positionChanged, [this](qint64 position) {
-        qDebug() << Q_FUNC_INFO << position;
+        int percentage = 0;
+        if (position > 0)
+            percentage = ((float)position / (float)m_player->duration()) * 100.0;
+        if ( percentage != m_playPosition) {
+            m_playPosition = percentage;
+            emit playPositionChanged();
+        }
     });
-    thread->start();
+    QDir dir("/run/media/defaultuser/9016-4EF8", "*.ogg", QDir::Reversed);
+    QStringList files;
+    for (const QFileInfo& info : dir.entryInfoList()) {
+        m_files.append(info.absoluteFilePath());
+    }
+    if (!m_files.isEmpty())
+        m_player->setMedia(QUrl::fromLocalFile(m_files.at(0)));
 }
 
 int CallSaverModel::rowCount(const QModelIndex &parent) const
@@ -105,4 +118,9 @@ void CallSaverModel::play(int index)
 {
     m_playindex = index;
     m_player->setMedia(QUrl::fromLocalFile(m_files.at(index)));
+}
+
+int CallSaverModel::playPosition()
+{
+    return m_playPosition;
 }
