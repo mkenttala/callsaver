@@ -29,6 +29,8 @@ public:
     virtual QHash<int, QByteArray> roleNames() const;
 
     Q_INVOKABLE void play(int index);
+    Q_INVOKABLE void pauseToggle();
+    Q_INVOKABLE void seek(int percentage);
     Q_INVOKABLE int playPosition();
 
 signals:

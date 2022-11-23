@@ -6,16 +6,6 @@
 
 CallSaverModel::CallSaverModel(QObject *parent) : QAbstractListModel(parent), m_player(new QMediaPlayer(this)), m_playindex(-1), m_playPosition(0)
 {
-    /*CallSaverThread* thread = new CallSaverThread(this);
-    connect(thread, &CallSaverThread::file, [this](const QString& name) {
-        m_files.append(name);
-        beginInsertRows(index(m_files.count()), m_files.count(), m_files.count());
-        endInsertRows();
-    });
-    connect(thread, &CallSaverThread::finished, [this]() {
-        if (!m_files.isEmpty())
-            m_player->setMedia(QUrl::fromLocalFile(m_files.at(0)));
-    });*/
     connect(m_player, &QMediaPlayer::mediaStatusChanged, [this]() {
         QString file = m_player->media().canonicalUrl().toLocalFile();
         int i = m_files.indexOf(file);
@@ -118,6 +108,19 @@ void CallSaverModel::play(int index)
 {
     m_playindex = index;
     m_player->setMedia(QUrl::fromLocalFile(m_files.at(index)));
+}
+
+void CallSaverModel::pauseToggle()
+{
+    if (m_player->state() == QMediaPlayer::PlayingState)
+        m_player->pause();
+    else
+        m_player->play();
+}
+
+void CallSaverModel::seek(int percentage)
+{
+    qDebug() << Q_FUNC_INFO << percentage;
 }
 
 int CallSaverModel::playPosition()

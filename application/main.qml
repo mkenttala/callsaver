@@ -41,8 +41,15 @@ ApplicationWindow {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            listView.currentIndex = index;
-                            callSaverModel.play(index);
+                            if (listView.currentIndex == index)
+                                callSaverModel.pauseToggle();
+                            else {
+                                listView.currentIndex = index;
+                                callSaverModel.play(index);
+                            }
+                        }
+                        onPositionChanged: {
+                            console.log("positionChanged: x: " + mouse.x + " buttons: " + mouse.buttons);
                         }
                     }
                 }
